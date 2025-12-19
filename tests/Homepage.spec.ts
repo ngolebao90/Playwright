@@ -10,16 +10,14 @@ test.describe('The Internet - Homepage POM Tests (TypeScript)', () => {
     });
 
     test('TC01 - Verify the Title and Heading', async ({ page }) => {
-        // Assert Title trình duyệt
+        
         await expect(page).toHaveTitle('The Internet');
 
-        // Assert thông qua locator được định nghĩa trong POM
         await expect(homepage.mainHeading).toBeVisible();
         await expect(homepage.mainHeading).toHaveText('Welcome to the-internet');
     });
 
     test('TC-03: Verify Links Count', async () => {
-        // PHẢI CÓ ngoặc đơn () sau tên hàm
         const count = await homepage.getLinksCount(); 
         console.log(`Total links found: ${count}`);
         
