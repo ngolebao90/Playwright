@@ -17,7 +17,7 @@ test.describe('The Internet - Homepage POM Tests (TypeScript)', () => {
         await expect(homepage.mainHeading).toHaveText('Welcome to the-internet');
     });
 
-    test('TC-03: Verify Links Count', async () => {
+    test('TC-02: Verify Links Count', async () => {
         const count = await homepage.getLinksCount(); 
         console.log(`Total links found: ${count}`);
         

@@ -42,4 +42,33 @@ test.describe('The Internet - Add/Remove Element POM Tests (TypeScript)', () => 
         
         expect(finalCount).toBe(0);
     });
+
+    test('TC04 - Verify Add Button Visible and Enabled', async ({ page }) => {
+        const visible = await addRemoveElementPage.isAddButtonVisible();
+        const enabled = await addRemoveElementPage.isAddButtonEnabled();
+
+        expect(visible).toBeTruthy();
+        expect(enabled).toBeTruthy();
+    });
+
+    test('TC05 - Verify Delete Button Text', async () => {
+        await addRemoveElementPage.clickAddButton(1);
+        const text = await addRemoveElementPage.getDeleteButtonText(0);
+
+        expect(text).toBe('Delete');
+    });
+
+    test('TC06 - Verify Deleting With No Elements Throws', async () => {
+        await expect(addRemoveElementPage.clickDeleteButton(0)).rejects.toThrow();
+    });
+
+    test('TC07 - Verify Deleting Specific Index Reduces Count', async () => {
+        await addRemoveElementPage.clickAddButton(4);
+        const before = await addRemoveElementPage.getDeleteButtonsCount();
+        await addRemoveElementPage.clickDeleteButton(2);
+        const after = await addRemoveElementPage.getDeleteButtonsCount();
+
+        expect(before).toBe(4);
+        expect(after).toBe(3);
+    });
 });

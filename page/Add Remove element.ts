@@ -33,4 +33,22 @@ export class AddRemoveElementPage {
             throw new Error(`Index ${index} is out of bounds. Total delete buttons: ${count}`);
         }
     }
+
+    async isAddButtonVisible(): Promise<boolean> {
+        return await this.addButton.isVisible();
+    }
+
+    async isAddButtonEnabled(): Promise<boolean> {
+        return await this.addButton.isEnabled();
+    }
+
+    async getDeleteButtonText(index: number = 0): Promise<string> {
+        const count = await this.getDeleteButtonsCount();
+        if (index < count) {
+            const text = await this.deleteButtons.nth(index).textContent();
+            return text ? text.trim() : '';
+        } else {
+            throw new Error(`Index ${index} is out of bounds. Total delete buttons: ${count}`);
+        }
+    }
 }   
