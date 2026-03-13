@@ -1,0 +1,2 @@
+Initial delete buttons count: 2
+Final delete buttons count after removing all: 0
