@@ -28,7 +28,7 @@ export class DynamicControlPage {
     }
 
     async goto() {
-        await this.page.goto('https://the-internet.herokuapp.com/dynamic_controls');
+        await this.page.goto('/dynamic_controls');
     }
 
     private async waitForLoading(loadingLocator: Locator) {

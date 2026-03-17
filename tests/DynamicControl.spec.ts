@@ -89,7 +89,7 @@ test.describe('The Internet - Dynamic Control POM Tests (TypeScript)', () => {
     await expect(dynamicControlPage.checkbox).toBeHidden();
 
     // Điều hướng trực tiếp sang trang khác thay vì click link
-    await page.goto('https://the-internet.herokuapp.com/login');
+    await page.goto('/login');
     await expect(page).toHaveURL(/.*login/);
 
     // Quay lại bằng nút Back của trình duyệt
