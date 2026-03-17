@@ -29,7 +29,7 @@ test.describe('The Internet - Dynamic Control POM Tests (TypeScript)', () => {
         await expect(dynamicControlPage.message).toHaveText("It's back!");
     });
 
-    test('TC04 - Verify Enable Input Field', async () => {
+    test('TC03 - Verify Enable Input Field', async () => {
         await dynamicControlPage.clickEnableButton();
         
         // Tự động đợi cho đến khi input có thể tương tác (Enabled)
@@ -45,13 +45,4 @@ test.describe('The Internet - Dynamic Control POM Tests (TypeScript)', () => {
         await expect(dynamicControlPage.inputField).toBeDisabled();
         await expect(dynamicControlPage.message).toHaveText("It's disabled!");
     });
-
-    test('TC05 - Verify Message After Disabling Input Field', async () => {
-        await dynamicControlPage.clickEnableButton(); 
-        await dynamicControlPage.clickDisableButton(); 
-
-        await expect(dynamicControlPage.inputField).toBeDisabled();
-        await expect(dynamicControlPage.message).toHaveText("It's disabled!");
-    });
-
 });
