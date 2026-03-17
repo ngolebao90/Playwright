@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     tools {
-        // Tên này phải trùng với tên bạn đặt trong Global Tool Configuration
         nodejs 'node' 
     }
 
@@ -15,27 +14,24 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
-                // Cài đặt trình duyệt cho Playwright (cần thiết cho Linux)
-                sh 'npx playwright install --with-deps'
+                sh 'npm install'
+                sh 'npx playwright install'
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                // Sử dụng || true để pipeline không dừng lại nếu test fail, 
-                // giúp Allure vẫn có dữ liệu để tạo report
-                sh 'npx playwright test || true'
+                // Không dùng || true để Jenkins phản ánh đúng trạng thái test
+                sh 'npx playwright test'
             }
         }
     }
 
     post {
         always {
-            // Xuất báo cáo Allure
+            // Jenkins sẽ tự thu thập kết quả từ allure-results
             allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
             
-            // Lưu lại Playwright report mặc định (tùy chọn)
             archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
         }
     }
