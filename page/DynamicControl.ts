@@ -3,62 +3,56 @@ import { Page, Locator } from "@playwright/test";
 export class DynamicControlPage {
     readonly page: Page;
     readonly checkbox: Locator;
-    readonly swapCheckboxBtn: Locator;
-    readonly swapInputBtn: Locator;
+    readonly removeButton: Locator;
+    readonly addButton: Locator;
+    readonly enableButton: Locator;
+    readonly disableButton: Locator;
     readonly message: Locator;
     readonly loadingCheckbox: Locator;
     readonly loadingInput: Locator;
     readonly inputField: Locator;
 
     constructor(page: Page) {
-    this.page = page;
-    this.checkbox = page.locator('#checkbox');
-    this.swapCheckboxBtn = page.locator('#checkbox-example button');
-    this.swapInputBtn = page.locator('#input-example button');
-    this.message = page.locator('#message');
-    
-    // Thêm .first() để tránh lỗi khi có nhiều ID trùng nhau
-    this.loadingCheckbox = page.locator('#checkbox-example #loading').first();
-    this.loadingInput = page.locator('#input-example #loading').first();
-    
-    this.inputField = page.locator('#input-example input');
+        this.page = page;
+        this.checkbox = page.locator('#checkbox');
+        this.message = page.locator('#message');
+        this.inputField = page.locator('#input-example input');
+        // Nút bấm thay đổi text nhưng selector không đổi
+        this.removeButton = page.locator('#checkbox-example button');
+        this.addButton = page.locator('#checkbox-example button');
+        this.enableButton = page.locator('#input-example button');
+        this.disableButton = page.locator('#input-example button');
+        // Sử dụng .first() để tránh lỗi strict mode do trùng ID loading
+        this.loadingCheckbox = page.locator('#checkbox-example #loading').first();
+        this.loadingInput = page.locator('#input-example #loading').first();
+    }
+
+    async goto() {
+        await this.page.goto('https://the-internet.herokuapp.com/dynamic_controls');
+    }
+
+    private async waitForLoading(loadingLocator: Locator) {
+        await loadingLocator.waitFor({ state: 'visible', timeout: 3000 }).catch(() => {});
+        await loadingLocator.waitFor({ state: 'hidden', timeout: 20000 });
     }
 
     async clickRemoveButton() {
-        await this.swapCheckboxBtn.click();
-        await this.loadingCheckbox.waitFor({ state: 'hidden' });
+        await this.removeButton.click();
+        await this.waitForLoading(this.loadingCheckbox);
     }
 
     async clickAddButton() {
-        await this.swapCheckboxBtn.click();
-        await this.loadingCheckbox.waitFor({ state: 'hidden' });
+        await this.addButton.click();
+        await this.waitForLoading(this.loadingCheckbox);
     }
 
     async clickEnableButton() {
-        await this.swapInputBtn.click();
-        await this.loadingInput.waitFor({ state: 'hidden' });
+        await this.enableButton.click();
+        await this.waitForLoading(this.loadingInput);
     }
 
     async clickDisableButton() {
-        await this.swapInputBtn.click();
-        await this.loadingInput.waitFor({ state: 'hidden' });
-    }
-
-    async isInputFieldEnabled(): Promise<boolean> {
-        return await this.inputField.isEnabled();
-    }   
-
-    async isCheckboxVisible(): Promise<boolean> {
-        // Dùng .isVisible() nhưng nên đợi 1 chút để UI ổn định
-        try {
-            await this.page.waitForTimeout(500); // Đợi 0.5 giây để tránh lỗi do UI chưa kịp cập nhật
-            return true;
-        } catch (error) {
-            return false;
-        }
-    }
-
-    async getMessageText(): Promise<string> {
-        return (await this.message.textContent())?.trim() || '';
+        await this.disableButton.click();
+        await this.waitForLoading(this.loadingInput);
     }
 }
