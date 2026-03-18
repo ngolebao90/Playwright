@@ -2,7 +2,6 @@ import { Page, Locator } from '@playwright/test';
 
 export class Homepage {
     readonly page: Page;
-    readonly url: string = 'https://the-internet.herokuapp.com/';
     readonly mainHeading: Locator;
     readonly footerLink: Locator;
     readonly allLinks: Locator;
@@ -15,15 +14,14 @@ export class Homepage {
     }
 
     async goto() {
-        // ĐÚNG: await [khoảng trắng] this...
-        await this.page.goto(this.url);
+        // Playwright sẽ tự ghép baseURL + '/'
+        await this.page.goto('/',{ waitUntil: 'domcontentloaded' });
     }
 
     async clickLinkByText(text: string) {
-        await this.page.click(`text=${text}`);
-    }
-
-    async getLinksCount(): Promise<number> {
-        return await this.allLinks.count();
+        // Đợi link sẵn sàng trước khi click để tránh lỗi TC17
+        const link = this.page.locator(`text=${text}`);
+        await link.waitFor({ state: 'visible', timeout: 5000 });
+        await link.click();
     }
 }

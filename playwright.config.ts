@@ -1,95 +1,52 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: './tests',
-  /* Run tests in files in parallel */
-  fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
-  /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
   
-  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  /* 1. KHẮC PHỤC LỖI MẠNG (ERR_NETWORK_CHANGED)
+     Tắt chế độ chạy song song hoàn toàn và giới hạn workers xuống 1. 
+     Trang web demo thường bị nghẽn nếu có quá nhiều trình duyệt truy cập cùng lúc. */
+  fullyParallel: false,
+  workers: 1, 
+
+  /* 2. CƠ CHẾ TỰ ĐỘNG CHẠY LẠI (RETRIES)
+     Nếu bị lỗi mạng nhất thời, Playwright sẽ thử lại. Đây là cách tốt nhất để xử lý lỗi mạng. */
+  retries: 2, 
+
+  /* 3. TĂNG THỜI GIAN CHỜ TỔNG THỂ CHO TEST CASE */
+  timeout: 60000, 
+
+  forbidOnly: !!process.env.CI,
+  
   reporter: [
-    ['html'], // Báo cáo HTML mặc định của Playwright
+    ['html'], 
     [
       'allure-playwright', 
       {
         detail: true,
-        outputFolder: 'allure-results', // Thư mục chứa dữ liệu thô (quan trọng để Jenkins đọc)
+        outputFolder: 'allure-results',
         suiteTitle: false,
       },
     ],
   ],
 
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-     //Base URL to use in actions like `await page.goto('')`.
+    /* Đã cấu hình baseURL để bạn gọi page.goto('/') trong POM */
     baseURL: 'https://the-internet.herokuapp.com',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    /* 4. TĂNG THỜI GIAN ĐỢI CHO TỪNG HÀNH ĐỘNG CỤ THỂ */
+    actionTimeout: 20000,      // Đợi 20s cho click, fill...
+    navigationTimeout: 45000,  // Đợi 45s cho việc tải trang (Page Load)
 
-    /* Cấu hình để Allure ghi lại Screenshot và Video khi test lỗi */
+    trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
 
-  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    /* {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    }, */
-
-    /* {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    }, */
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://localhost:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
