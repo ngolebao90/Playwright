@@ -24,4 +24,8 @@ export class Homepage {
         await link.waitFor({ state: 'visible', timeout: 5000 });
         await link.click();
     }
+
+    async getLinksCount(): Promise<number> {
+        return await this.allLinks.count();
+    }
 }
