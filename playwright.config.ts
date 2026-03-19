@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: './src/tests',
   
   /* 1. KHẮC PHỤC LỖI MẠNG (ERR_NETWORK_CHANGED)
      Tắt chế độ chạy song song hoàn toàn và giới hạn workers xuống 1. 
