@@ -14,12 +14,11 @@ export class Homepage {
     }
 
     async goto() {
-        // Playwright sẽ tự ghép baseURL + '/'
         await this.page.goto('/',{ waitUntil: 'domcontentloaded' });
     }
 
     async clickLinkByText(text: string) {
-        // Đợi link sẵn sàng trước khi click để tránh lỗi TC17
+        
         const link = this.page.locator(`text=${text}`);
         await link.waitFor({ state: 'visible', timeout: 5000 });
         await link.click();
