@@ -32,7 +32,7 @@ export default defineConfig({
 
   use: {
     /* Đã cấu hình baseURL để bạn gọi page.goto('/') trong POM */
-    baseURL: 'https://the-internet.herokuapp.com',
+    baseURL: 'https://practicesoftwaretesting.com/',
 
     /* 4. TĂNG THỜI GIAN ĐỢI CHO TỪNG HÀNH ĐỘNG CỤ THỂ */
     actionTimeout: 20000,      // Đợi 20s cho click, fill...
