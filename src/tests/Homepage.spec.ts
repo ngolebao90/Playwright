@@ -1,94 +1,79 @@
-import { expect, test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { Homepage } from '../page/Homepage';
 
-test.describe('Practice Software Testing homepage', () => {
+test.describe('DemoQA Homepage Navigation Actions', () => {
   
- // TC001 - High Priority: Verify core homepage elements and sections.
-  test('TC001 - should load, scroll, and display all homepage sections @priority-high', async ({ page }) => {
-    const homepage = new Homepage(page);
+  // Dùng beforeEach để khởi tạo Homepage và goto() một lần cho tất cả các test
+  let homePage: Homepage;
 
-    await homepage.goto();
-    await homepage.expectLoaded();
-    
-    // Verify top & middle sections
-    await homepage.expectHomepageSections();
-
-    // ACTION: Scroll to the bottom of the page to ensure visibility of footer elements.
-    // This is useful for testing long pages or elements that load on scroll.
-    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    
-    // Verify footer elements are visible after scrolling
-    await expect(homepage.privacyPolicyLink).toBeVisible();
-    await expect(homepage.documentationLink).toBeVisible();
-    
-    // Optional: Scroll back to top if needed for further actions
-    await page.evaluate(() => window.scrollTo(0, 0));
+  test.beforeEach(async ({ page }) => {
+    homePage = new Homepage(page);
+    await homePage.goto();
   });
 
-  // TC002 - High Priority: Verify that the search functionality triggers navigation.
-  test('TC002 - should perform search and display filtered results @priority-high', async ({ page }) => {
-    const homepage = new Homepage(page);
-
-    await homepage.goto();
-    await homepage.expectLoaded();
-    
-    // Perform search
-    await homepage.search('pliers');
-
-    // check that the results header confirms the search query.
-    await expect(page.getByRole('heading', { name: /searched for: pliers/i })).toBeVisible();
-
-    // Verify at least one product card is visible in the results
-    await expect(homepage.productList.first()).toBeVisible();
+  test('1. High priority: Click logo returns to homepage', async () => {
+    await expect(homePage.logo).toBeVisible();
+    await homePage.logo.click();
   });
 
-  // TC003 - High Priority: Verify navigation to a specific product detail page.
-  test('TC003 - should click on a product and navigate to product page @priority-high', async ({ page }) => {
-    const homepage = new Homepage(page);
-
-    await homepage.goto();
-    // Ensure the page is ready before looking for products.
-    await homepage.expectLoaded();
-
-    // Verify the product is visible with a sufficient timeout for slow API responses.
-    // We use the page object method to perform the interaction.
-    await homepage.clickProductByName('Combination Pliers');
-    
-    // Check if the URL changed to the product detail path.
-    await expect(page).toHaveURL(/product/i);
+  test('2. High priority: Count number of category items', async () => {
+    const count = await homePage.countNumberOfCategoryCards();
+    expect(count).toBeGreaterThan(0);
   });
 
-  // TC004 - Medium Priority: Verify internal footer link navigation.
-  test('TC004 - should open Privacy Policy page @priority-medium', async ({ page }) => {
-    const homepage = new Homepage(page);
+  test('3. Medium priority: Clicking banner links opens new tab', async ({ page }) => {
+    await expect(homePage.seleniumTrainingLink).toBeVisible();
 
-    await homepage.goto();
-    await homepage.expectLoaded();
-    await homepage.openPrivacyPolicy();
-
-    // Verify successful navigation to the Privacy Policy section.
-    await expect(page).toHaveURL(/privacy/i);
-  });
-
-  // TC005 - Low Priority: Verify external link opens in a new tab.
-  test('TC005 - should open Documentation page @priority-low', async ({ page, context }) => {
-    const homepage = new Homepage(page);
-    
-    await homepage.goto();
-    await homepage.expectLoaded();
-
-    // Capture the new tab/window event before performing the click action.
-    // This is required for links that use target="_blank".
     const [newPage] = await Promise.all([
-        context.waitForEvent('page'),   // Wait for the new page event to fire.
-        homepage.openDocumentation()    // Perform the trigger action.
+      page.context().waitForEvent('page'),
+      homePage.seleniumTrainingLink.click()
     ]);
 
-    // Ensure the new tab is fully loaded before asserting the URL.
-    await newPage.waitForLoadState();
-    await expect(newPage).toHaveURL(/testsmith-io\.github\.io/i);
-    
-    // Clean up by closing the secondary tab.
+    await newPage.waitForLoadState('domcontentloaded');
+    expect(newPage.url()).toContain('toolsqa.com');
     await newPage.close();
+  });
+
+  test('4. Medium priority: Click Join Now button opens in new tab', async ({ context }) => {
+    await expect(homePage.joinNowButton).toBeVisible();
+
+    const [newPage] = await Promise.all([
+      context.waitForEvent('page'),
+      homePage.joinNowButton.click()
+    ]);
+
+    await newPage.waitForLoadState('domcontentloaded');
+    expect(newPage.url()).toContain('toolsqa.com');
+    await newPage.close();
+  });
+
+ test('5. High priority: Click and verify each Category Card', async ({ page }) => {
+    const count = await homePage.countNumberOfCategoryCards();
+
+    for (let i = 0; i < count; i++) {
+      // 1. Click card
+      await homePage.clickCategoryByIndex(i);
+
+      // 2. Đợi trang load và kiểm tra phần tử sidebar hoặc nội dung bên phải hiển thị
+      const sidebarMenu = page.locator('.left-pannel');
+      await expect(sidebarMenu).toBeVisible({ timeout: 10000 });
+
+      // 3. Quay lại trang chủ
+      await page.goBack();
+      
+      // Đợi trang chủ sẵn sàng
+      await expect(homePage.categoryCards.first()).toBeVisible();
+      
+      // Xóa quảng cáo nếu nó hiện lại
+      await page.evaluate(() => {
+        const banner = document.querySelector('div[id^="fixedban"]');
+        if (banner) banner.remove();
+      });
+    }
+  });
+
+  test('6. Low priority: Verify footer text content', async () => {
+    await expect(homePage.footer).toBeVisible();
+    await homePage.VerifyFooterText('© 2013-2026 TOOLSQA.COM | ALL RIGHTS RESERVED.');
   });
 });

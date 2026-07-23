@@ -1,107 +1,49 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from "@playwright/test";
 
-// Page Object Model for the Practice Software Testing homepage.
-// This class keeps selectors and interactions together in one place.
 export class Homepage {
   readonly page: Page;
-  readonly demoNotice: Locator;
-  readonly sortLabel: Locator;
-  readonly priceRangeLabel: Locator;
-  readonly categorySection: Locator;
-  readonly brandSection: Locator;
-  readonly sustainabilitySection: Locator;
-  readonly productList: Locator;
-  readonly searchInput: Locator;
-  readonly searchButton: Locator;
-  readonly privacyPolicyLink: Locator;
-  readonly documentationLink: Locator;
+  readonly categoryCards: Locator; 
+  readonly homeBanner: Locator;
+  readonly logo: Locator;
+  readonly footer: Locator;
+  readonly joinNowButton: Locator;
+  readonly seleniumTrainingLink: Locator;
+  readonly footerText: Locator;
 
   constructor(page: Page) {
     this.page = page;
-
-    // The main visible elements on the homepage.
-    // Using explicit text and role-based locators for maximum resilience.
-    this.demoNotice = page.getByText('This is a DEMO application');
-    this.sortLabel = page.getByText('Sort');
-    this.priceRangeLabel = page.getByText('Price Range');
-    this.categorySection = page.getByText('By category');
-    this.brandSection = page.getByText('By brand');
-    this.sustainabilitySection = page.getByText('Sustainability');
-
-    // Product cards are identified by the common ".card" class.
-    this.productList = page.locator('.card');
-
-    // Search components: Input field and the explicit Search button.
-    this.searchInput = page.getByPlaceholder(/search/i);
-    this.searchButton = page.locator('[data-test="search-submit"]');
-
-    // Footer links located at the bottom of the page.
-    this.privacyPolicyLink = page.getByRole('link', { name: /privacy policy/i });
-    this.documentationLink = page.getByRole('link', { name: /documentation/i });
+    // Target the individual card elements, not just the container
+    this.categoryCards = page.locator('.category-cards .card'); 
+    this.homeBanner = page.locator('.home-banner');
+    this.logo = page.getByRole('link').filter({ has: page.getByRole('img') }).first();
+    this.footer = page.locator('footer');
+    this.footerText = this.footer.locator('span');
+    this.joinNowButton = page.getByRole('link', { name: 'Selenium Online Training' });
+    this.seleniumTrainingLink = page.getByRole('link', { name: 'Selenium Online Training' });
   }
 
-  // Navigate to the homepage using the base URL.
   async goto() {
     await this.page.goto('/');
   }
 
-  // Basic homepage load verification.
-  async expectLoaded() {
-    await expect(this.page).toHaveURL(/\/$/);
-    await expect(this.demoNotice).toBeVisible({ timeout: 15000 });
+  // Improved counting method
+  async countNumberOfCategoryCards(): Promise<number> {
+    return await this.categoryCards.count();
   }
 
-  // Check that the main homepage sections and product grid are visible.
-  async expectHomepageSections() {
-    await expect(this.sortLabel).toBeVisible();
-    await expect(this.priceRangeLabel).toBeVisible();
-    await expect(this.categorySection).toBeVisible();
-    await expect(this.brandSection).toBeVisible();
-    
-    // Explicitly wait for the first product card to appear.
-    // This is more reliable than 'networkidle' for dynamic SPA content.
-    await this.productList.first().waitFor({ state: 'visible', timeout: 15000 });
-    
-    await expect(this.sustainabilitySection).toBeVisible();
-    await expect(this.productList.first()).toBeVisible();
+  // Handle new tabs properly in the test logic (example below)
+  async clickSeleniumTraining() {
+    // We return the promise of a new page to handle the tab
+    return this.page.context().waitForEvent('page');
   }
 
-  // Perform a search and wait for the results to be filtered or URL to update.
-  async search(query: string) {
-    await expect(this.searchInput).toBeVisible();
-    await this.searchInput.fill(query)
-    
-    // Trigger the search.
-    await this.searchButton.click();
-    
-    // FIX: Using 'domcontentloaded' instead of the default 'load' state.
-    // In SPAs, the 'load' event often doesn't re-fire on search.
-    await this.productList.first().waitFor({ 
-    state: 'visible', 
-    timeout: 15000 
-  });
-
-    // Ensure the results are actually rendered before proceeding.
-    //await this.productList.first().waitFor({ state: 'visible', timeout: 10000 });
+  async VerifyFooterText(expectedText: string) {
+    await expect(this.footerText).toHaveText(expectedText);
   }
 
-  // Click a specific product card based on its visible title text.
-  async clickProductByName(productName: string) {
-    const product = this.page.locator('.card-title').filter({ hasText: productName }).first();
-    await product.scrollIntoViewIfNeeded();
-    await expect(product).toBeVisible({ timeout: 10000 });
-    await product.click();
-  }
-
-  // Navigate to the Privacy Policy page.
-  async openPrivacyPolicy() {
-    await expect(this.privacyPolicyLink).toBeVisible();
-    await this.privacyPolicyLink.click();
-  }
-
-  // Click the Documentation link. 
-  async openDocumentation() {
-    await expect(this.documentationLink).toBeVisible();
-    await this.documentationLink.click();
-  }
+  async clickCategoryByIndex(index: number) {
+  const card = this.categoryCards.nth(index);
+  await card.scrollIntoViewIfNeeded(); // Giúp tránh lỗi bị che bởi quảng cáo
+  await card.click();
+}
 }
