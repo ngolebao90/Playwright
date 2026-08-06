@@ -1,10 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node' 
-    }
-
     stages {
         stage('Checkout') {
             steps {
@@ -21,17 +17,14 @@ pipeline {
 
         stage('Run Playwright Tests') {
             steps {
-                // Không dùng || true để Jenkins phản ánh đúng trạng thái test
                 sh 'npx playwright test'
-            }
+     té
         }
     }
 
     post {
         always {
-            // Jenkins sẽ tự thu thập kết quả từ allure-results
             allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
-            
             archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
         }
     }
