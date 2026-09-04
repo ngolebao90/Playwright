@@ -51,20 +51,13 @@ test.describe('DemoQA Homepage Navigation Actions', () => {
     const count = await homePage.countNumberOfCategoryCards();
 
     for (let i = 0; i < count; i++) {
-      // 1. Click card
       await homePage.clickCategoryByIndex(i);
-
-      // 2. Đợi trang load và kiểm tra phần tử sidebar hoặc nội dung bên phải hiển thị
       const sidebarMenu = page.locator('.left-pannel');
       await expect(sidebarMenu).toBeVisible({ timeout: 10000 });
 
-      // 3. Quay lại trang chủ
       await page.goBack();
-      
-      // Đợi trang chủ sẵn sàng
       await expect(homePage.categoryCards.first()).toBeVisible();
       
-      // Xóa quảng cáo nếu nó hiện lại
       await page.evaluate(() => {
         const banner = document.querySelector('div[id^="fixedban"]');
         if (banner) banner.remove();

@@ -43,7 +43,7 @@ export class Homepage {
 
   async clickCategoryByIndex(index: number) {
   const card = this.categoryCards.nth(index);
-  await card.scrollIntoViewIfNeeded(); // Giúp tránh lỗi bị che bởi quảng cáo
+  await card.scrollIntoViewIfNeeded(); 
   await card.click();
 }
 }

@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
+
+  testMatch: '**/*.spec.ts',
   testDir: './src/tests',
   
   /* 1. KHẮC PHỤC LỖI MẠNG (ERR_NETWORK_CHANGED)
@@ -31,6 +33,10 @@ export default defineConfig({
   ],
 
   use: {
+    headless: false,
+    launchOptions: {
+      slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : 0,
+    },
     /* Đã cấu hình baseURL để bạn gọi page.goto('/') trong POM */
     baseURL: 'https://demoqa.com/',
 
@@ -49,4 +55,5 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
+  
 });

@@ -8,4 +8,6 @@ node_modules/
 /playwright/.auth/
 .env
 allure-results/
-allure-report/
+allure-report/.DS_Store
+src/.DS_Store
+.DS_Store
