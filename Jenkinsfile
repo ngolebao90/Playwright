@@ -12,7 +12,7 @@ pipeline {
     environment {
         // Biến môi trường cho DB test (nếu dùng cleanup script global-teardown.ts)
         // Lưu giá trị thật trong Jenkins Credentials, KHÔNG hardcode ở đây
-        TEST_DB_URL  = credentials('test-db-url')
+        //TEST_DB_URL  = credentials('test-db-url')
         CI           = 'true'
     }
 
