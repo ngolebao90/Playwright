@@ -34,7 +34,8 @@ pipeline {
 
         stage('Install dependencies') {
             steps {
-                sh 'npm ci'   // Dùng npm ci thay vì npm install để build ổn định, đúng version theo package-lock.json
+                sh 'npm run clean || true' // Dọn dẹp sạch sẽ kết quả cũ trước khi chạy
+                sh 'npm ci'                // Dùng npm ci để build ổn định theo package-lock.json
             }
         }
 
