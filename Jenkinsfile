@@ -62,6 +62,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Check Server Specs') {
+            steps {
+                        sh 'nproc'    // In ra số nhân CPU của máy chủ
+                        sh 'free -h'  // In ra dung lượng RAM còn trống của máy chủ
+                }
+}
     }
 
     post {
