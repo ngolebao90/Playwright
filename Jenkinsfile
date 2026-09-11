@@ -10,6 +10,8 @@ pipeline {
     }
 
     environment {
+        // Cung cấp đường dẫn tìm thấy node/npm trên macOS (/usr/local/bin và /opt/homebrew/bin)
+        PATH         = "/usr/local/bin:/opt/homebrew/bin:$PATH"
         // Biến môi trường cho DB test (nếu dùng cleanup script global-teardown.ts)
         // Lưu giá trị thật trong Jenkins Credentials, KHÔNG hardcode ở đây
         //TEST_DB_URL  = credentials('test-db-url')
@@ -62,13 +64,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Check Server Specs') {
-            steps {
-                        sh 'nproc'    // In ra số nhân CPU của máy chủ
-                        sh 'free -h'  // In ra dung lượng RAM còn trống của máy chủ
-                }
-}
     }
 
     post {
