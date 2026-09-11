@@ -8,8 +8,8 @@ export default defineConfig({
   /* 1. KHẮC PHỤC LỖI MẠNG (ERR_NETWORK_CHANGED)
      Tắt chế độ chạy song song hoàn toàn và giới hạn workers xuống 1. 
      Trang web demo thường bị nghẽn nếu có quá nhiều trình duyệt truy cập cùng lúc. */
-  fullyParallel: false,
-  workers: 1, 
+  fullyParallel: true,
+  /*workers: 1, */
 
   /* 2. CƠ CHẾ TỰ ĐỘNG CHẠY LẠI (RETRIES)
      Nếu bị lỗi mạng nhất thời, Playwright sẽ thử lại. Đây là cách tốt nhất để xử lý lỗi mạng. */
@@ -33,7 +33,7 @@ export default defineConfig({
   ],
 
   use: {
-    headless: false,
+    headless: true,
     launchOptions: {
       slowMo: process.env.SLOW_MO ? Number(process.env.SLOW_MO) : 0,
     },
