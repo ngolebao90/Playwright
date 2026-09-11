@@ -4,7 +4,7 @@ pipeline {
     // Cho phép chọn cấu hình linh hoạt khi trigger build thủ công trên Jenkins UI
     parameters {
         choice(name: 'BROWSER', choices: ['chromium', 'firefox', 'webkit'], description: 'Trình duyệt sẽ chạy test')
-        string(name: 'WORKERS', defaultValue: '3', description: 'Số worker chạy song song (khuyên dùng 3 - 5 khi có nhiều testcase)')
+        string(name: 'WORKERS', defaultValue: '4', description: 'Số worker chạy song song (khuyên dùng 4 - 5 cho cấu hình 10 cores)')
         choice(name: 'TEST_SCOPE', choices: ['all', '@smoke', '@regression'], description: 'Phạm vi test: all (toàn bộ), @smoke (chạy nhanh), @regression')
         string(name: 'RETRIES', defaultValue: '1', description: 'Số lần tự động chạy lại nếu test bị fail do nghẽn mạng')
     }
