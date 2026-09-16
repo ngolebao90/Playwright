@@ -24,6 +24,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '20')) // Chỉ giữ lại 20 build gần nhất, tránh đầy ổ đĩa Jenkins
     }
 
+    triggers {
+        // Tự động trigger build khi có commit mới trên nhánh main/master
+        pollSCM('H 3 * * *') // 3 giờ sáng mỗi ngày check xem có commit mới không, nếu có thì trigger build
+    }
+
     stages {
 
         stage('Checkout') {
